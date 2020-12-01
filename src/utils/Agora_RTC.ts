@@ -12,22 +12,8 @@ const rtc: IRtc = {
   localVideoTrack: null,
 }
 
-// const options = {
-//   // Pass your app ID here
-//   appId: "<YOUR APP ID>",
-//   // Set the channel name
-//   channel: "demo_channel_name",
-//   // Pass a token if your project enables the App Certificate
-//   token: null,
-//   // // If not specified, agora will automatically assign one
-//   // uid: null,
-// };
-
-async function startBasicCall(options: {
-  appId: any
-  channel: any
-  token: any
-}) {
+const appId = '5e2851027df849dcabeb694c39b83547'
+async function startBasicCall(options: { channel: any; token: any }) {
   rtc.client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
   if (rtc.client != null) {
     // Subscribe to a remote user
@@ -73,7 +59,7 @@ async function startBasicCall(options: {
 
     // Join a channel
     const uid = await rtc.client.join(
-      options.appId,
+      appId,
       options.channel,
       options.token,
       null
@@ -83,7 +69,9 @@ async function startBasicCall(options: {
     // Create an audio track from the audio captured by a microphone
     rtc.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack()
     // Create a video track from the video captured by a camera
-    rtc.localVideoTrack = await AgoraRTC.createCameraVideoTrack()
+    rtc.localVideoTrack = await AgoraRTC.createCameraVideoTrack({
+      encoderConfig: '720p_1',
+    })
 
     const localPlayer = document.createElement('div')
     localPlayer.id = uid + ''
