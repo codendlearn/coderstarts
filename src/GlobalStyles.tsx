@@ -88,6 +88,18 @@ const styles = (theme: Theme) => ({
             [theme.breakpoints.down("xs")]: {
                 paddingTop: `${theme.spacing(14)}px !important`
             }
+        },
+        ".lg-p-top1": {
+            paddingTop: `${theme.spacing(10)}px !important`,
+            [theme.breakpoints.down("md")]: {
+                paddingTop: `${theme.spacing(6)}px !important`
+            },
+            [theme.breakpoints.down("sm")]: {
+                paddingTop: `${theme.spacing(6)}px !important`
+            },
+            [theme.breakpoints.down("xs")]: {
+                paddingTop: `${theme.spacing(4)}px !important`
+            }
         }
     }
 })
