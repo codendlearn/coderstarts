@@ -2,9 +2,9 @@ import BookIcon from "@material-ui/icons/Book"
 import HomeIcon from "@material-ui/icons/Home"
 import HowToRegIcon from "@material-ui/icons/HowToReg"
 import React from 'react'
+import {IMenuItem} from "../model/IMenuItem"
 import Home from '../pages/Home'
 import VideoConsultation from "../pages/videocall/VideoConsultation"
-import {IMenuItem} from "../types/IMenuItem"
 
 export const menuItems: IMenuItem[] = [
   {

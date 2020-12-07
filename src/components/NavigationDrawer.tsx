@@ -22,7 +22,7 @@ import CloseIcon from "@material-ui/icons/Close"
 import React, {useEffect} from "react"
 import {Link} from "react-router-dom"
 import useWidth from "../hoc/useWidth"
-import {IMenuItem} from "../types/IMenuItem"
+import {IMenuItem} from "../model/IMenuItem"
 
 const styles = makeStyles((theme: Theme) => createStyles({
     closeIcon: {

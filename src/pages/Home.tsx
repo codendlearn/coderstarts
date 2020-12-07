@@ -8,6 +8,7 @@ import CookieConsent from '../components/CookieConsent'
 import CookieRulesDialog from '../components/CookieRulesDialog'
 import Footer from '../components/Footer'
 import Header from '../components/Header'
+import {ConsultationStateProvider} from "../store/ConsultationStore"
 import Blog from './Blog'
 import FeatureSection from './home/FeaturesSection'
 import HeadSection from './home/HeadSection'
@@ -73,7 +74,9 @@ const Home = () => {
                         <Blog />
                     </Route>
                     <Route exact path="/consultation">
-                        <VideoConsultation />
+                        <ConsultationStateProvider>
+                            <VideoConsultation />
+                        </ConsultationStateProvider>
                     </Route>
                     <Route exact path="/asdf">
                         <div>test</div>

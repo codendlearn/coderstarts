@@ -119,6 +119,14 @@
 }
 
 #video-agora-local {
+  border:1px solid blue;
+  width: 320px;
+  height: 240px;
+  margin-right: 75px;
+}
+
+#video-agora-remote {
+  border:1px solid black;
   width: 320px;
   height: 240px;
   margin-right: 75px;
