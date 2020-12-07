@@ -5,3 +5,9 @@ export interface IUser {
   profileImage: string
   provider?: string
 }
+
+export interface ICallUser {
+  name?: string
+  id?: string
+  token?: string
+}

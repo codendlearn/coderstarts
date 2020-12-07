@@ -10,10 +10,10 @@ import Footer from '../components/Footer'
 import Header from '../components/Header'
 import {ConsultationStateProvider} from "../store/ConsultationStore"
 import Blog from './Blog'
+import VideoConsultation from "./consultation/VideoConsultation"
 import FeatureSection from './home/FeaturesSection'
 import HeadSection from './home/HeadSection'
 import PricingSection from "./home/PricingSection"
-import VideoConsultation from "./videocall/VideoConsultation"
 
 AOS.init({once: true})
 

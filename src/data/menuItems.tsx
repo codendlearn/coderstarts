@@ -3,8 +3,8 @@ import HomeIcon from "@material-ui/icons/Home"
 import HowToRegIcon from "@material-ui/icons/HowToReg"
 import React from 'react'
 import {IMenuItem} from "../model/IMenuItem"
+import VideoConsultation from "../pages/consultation/VideoConsultation"
 import Home from '../pages/Home'
-import VideoConsultation from "../pages/videocall/VideoConsultation"
 
 export const menuItems: IMenuItem[] = [
   {
