@@ -24,9 +24,9 @@ const VideoCall: React.FC<{groupId: string}> = props => {
         provisionNewUser()
     }, [])
 
-    const placeCall = (callAgent: CallAgent) => {
+    const placeCall = (callAgent: CallAgent, deviceManager: DeviceManager) => {
         try {
-            let callOptions = getCallOptions()
+            let callOptions = getCallOptions(deviceManager)
             let call = callAgent?.join({
                 groupId: props.groupId
             }, callOptions)
@@ -105,14 +105,12 @@ const VideoCall: React.FC<{groupId: string}> = props => {
             })
 
             setReady(true)
-
-            placeCall(callAgentT)
+            placeCall(callAgentT, deviceManager)
             setBusy(false)
         } catch (e) {
             console.error(e)
             setError(e.message)
         }
-
     }
 
     return (

@@ -53,7 +53,7 @@ const CallCard: React.FC<ICallCardProps> = props => {
         onLoad()
     }, [])
 
-    const onLoad = async () => {
+    const onLoad = () => {
         const onCallStateChanged = () => {
             console.log('callStateChanged')
             setcallState(call.state)
@@ -66,7 +66,7 @@ const CallCard: React.FC<ICallCardProps> = props => {
                 }
             }
             if (call.state === 'Incoming') {
-                debugger
+
             }
         }
         onCallStateChanged()
@@ -77,7 +77,7 @@ const CallCard: React.FC<ICallCardProps> = props => {
 
         call.remoteParticipants.forEach(rp => subscribeToRemoteParticipant(rp))
         call.on('remoteParticipantsUpdated', e => {
-            debugger
+
             console.log(`Call=${call.id}, remoteParticipantsUpdated, added=${e.added}, removed=${e.removed}`)
             e.added.forEach(p => {
                 console.log('participantAdded', p)
@@ -89,13 +89,12 @@ const CallCard: React.FC<ICallCardProps> = props => {
                 setremoteParticipants([...call.remoteParticipants])
             })
         })
-
     }
 
     const subscribeToRemoteParticipant = (participant: RemoteParticipant) => {
-        debugger
+
         participant.on('participantStateChanged', () => {
-            debugger
+
             console.log('participantStateChanged', participant.identifier, participant.state)
             setremoteParticipants([...call.remoteParticipants])
         })
@@ -107,7 +106,7 @@ const CallCard: React.FC<ICallCardProps> = props => {
     }
 
     const handleParticipantStream = (e: any) => {
-        debugger
+
         e.added.forEach((stream: any) => {
             setRemoteStreams([...remoteStreams, stream])
         })
@@ -152,7 +151,7 @@ const CallCard: React.FC<ICallCardProps> = props => {
     const watchForCallFinishConnecting = async () => {
         return new Promise((resolve) => {
             if (call.state !== 'None' && call.state !== 'Connecting' && call.state !== 'Incoming') {
-                debugger
+
                 resolve(0)
             } else {
                 callFinishConnectingResolve = resolve
@@ -260,7 +259,7 @@ const CallCard: React.FC<ICallCardProps> = props => {
             Remote Streams: {remoteStreams && remoteStreams.length}
             <div>
                 {
-                    callState === 'Connected' && (<div className={classes.videoContainer}>
+                    callState === 'Connected' && (<div >
                         {
                             // remoteStreams.filter(f => f.type == "Video")
                             remoteStreams.map((v, index) => <StreamMedia key={index} stream={v} id={v.id} />)
