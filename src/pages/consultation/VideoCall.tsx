@@ -30,6 +30,7 @@ const VideoCall: React.FC<{groupId: string}> = props => {
             let call = callAgent?.join({
                 groupId: props.groupId
             }, callOptions)
+            callOptions.videoOptions?.localVideoStreams && call.startVideo(callOptions.videoOptions?.localVideoStreams[0])
         } catch (e) {
             console.log('Failed to place a call', e)
         }
@@ -83,7 +84,7 @@ const VideoCall: React.FC<{groupId: string}> = props => {
             await deviceManager.askDevicePermission(true, true)
             callAgentT.updateDisplayName(resp.user.communicationUserId)
             await deviceManager.askDevicePermission(true, true)
-            getCallOptions(deviceManager)
+            // getCallOptions(deviceManager)
 
             callAgentT.on('callsUpdated', e => {
                 console.log(`callsUpdated, added=${e.added}, removed=${e.removed}`)
@@ -95,11 +96,12 @@ const VideoCall: React.FC<{groupId: string}> = props => {
                     }
 
                     setCall(calla)
+                    calla.localVideoStreams[0] && calla.startVideo(calla.localVideoStreams[0])
                 })
 
                 e.removed.forEach(callr => {
                     if (call && call === callr) {
-                        setCall(undefined)
+                        //setCall(undefined)
                     }
                 })
             })

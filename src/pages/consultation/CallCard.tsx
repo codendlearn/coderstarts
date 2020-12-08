@@ -40,8 +40,9 @@ const styles = makeStyles((theme: Theme) => createStyles({
 const CallCard: React.FC<ICallCardProps> = props => {
 
     const classes = styles()
-    const [remoteParticipants, setremoteParticipants] = useState<RemoteParticipant[]>([])
-    const [remoteStreams, setRemoteStreams] = useState<RemoteVideoStream[]>([])
+
+    const [state, setstate] = useState<{remoteParticipants: RemoteParticipant[], remoteStreams: RemoteVideoStream[], }>({remoteParticipants: [], remoteStreams: []})
+
     const {call, cameraId, micId, speakerId, deviceManager} = props
     const [callId, setcallId] = useState<string>()
     const [callState, setcallState] = useState<CallState>()
@@ -51,7 +52,7 @@ const CallCard: React.FC<ICallCardProps> = props => {
 
     useEffect(() => {
         onLoad()
-    }, [])
+    }, [state])
 
     const onLoad = () => {
         const onCallStateChanged = () => {
@@ -82,12 +83,11 @@ const CallCard: React.FC<ICallCardProps> = props => {
             e.added.forEach(p => {
                 console.log('participantAdded', p)
                 subscribeToRemoteParticipant(p)
-                setremoteParticipants([...call.remoteParticipants])
             })
             e.removed.forEach(p => {
                 console.log('participantRemoved')
-                setremoteParticipants([...call.remoteParticipants])
             })
+            setstate({...state, remoteParticipants: [...state.remoteParticipants]})
         })
     }
 
@@ -96,23 +96,26 @@ const CallCard: React.FC<ICallCardProps> = props => {
         participant.on('participantStateChanged', () => {
 
             console.log('participantStateChanged', participant.identifier, participant.state)
-            setremoteParticipants([...call.remoteParticipants])
+            setstate({...state, remoteParticipants: [...state.remoteParticipants]})
         })
 
         let participantStreams = participant.videoStreams
-        participantStreams = participantStreams.filter(streamTuple => {return !remoteStreams.some(tuple => {return tuple === streamTuple && tuple.id === streamTuple.id})})
-        setRemoteStreams([...participantStreams, ...remoteStreams])
+        participantStreams = participantStreams.filter(streamTuple => {return !state.remoteStreams.some(tuple => {return tuple === streamTuple && tuple.id === streamTuple.id})})
+
+        setstate({...state, remoteStreams: [...participantStreams, ...state.remoteStreams]})
         participant.on('videoStreamsUpdated', handleParticipantStream)
     }
 
     const handleParticipantStream = (e: any) => {
 
         e.added.forEach((stream: any) => {
-            setRemoteStreams([...remoteStreams, stream])
+            console.log('video stream added', stream, stream.type)
         })
         e.removed.forEach((stream: any) => {
             console.log('video stream removed', stream, stream.type)
         })
+
+        setstate({...state, remoteStreams: [...state.remoteStreams, ...e.added]})
     }
 
     const handleAcceptCall = async () => {
@@ -255,14 +258,15 @@ const CallCard: React.FC<ICallCardProps> = props => {
     return (
         <div>
             <h4>State: {callState}</h4>
-            {remoteParticipants && <h4>Remote participants: {remoteParticipants.length} {remoteParticipants.map(x => x.displayName)}</h4>}
-            Remote Streams: {remoteStreams && remoteStreams.length}
+            {state.remoteParticipants && <h4>Remote participants: {state.remoteParticipants.length} {state.remoteParticipants.map(x => x.displayName)}</h4>}
+            Remote Streams: {state.remoteStreams && state.remoteStreams.length}
+            {state.remoteStreams && state.remoteStreams.map(x => <div>{x.id}: {x.type.toString()} : {x.isAvailable}</div>)}
             <div>
                 {
                     callState === 'Connected' && (<div >
                         {
                             // remoteStreams.filter(f => f.type == "Video")
-                            remoteStreams.map((v, index) => <StreamMedia key={index} stream={v} id={v.id} />)
+                            state.remoteStreams.map((v, index) => <StreamMedia key={index} stream={v} id={v.id} />)
                         }
 
                         <div>
