@@ -240,7 +240,7 @@ const CallCard: React.FC<ICallCardProps> = props => {
                 {
                     callState === 'Connected' && (<div>
                         {
-                            remoteStreams.map((v, index) => <StreamMedia key={index} stream={v} id={v.id} />)
+                            remoteStreams.filter(f => f.type == "Video").map((v, index) => <StreamMedia key={index} stream={v} id={v.id} />)
                         }
 
                         <div>

@@ -3,6 +3,7 @@ import {AzureCommunicationUserCredential} from '@azure/communication-common'
 import {Button, TextField} from '@material-ui/core'
 import React, {ChangeEvent, useState} from 'react'
 import {ICallUser} from '../../model/IUser'
+import {getUser} from '../../services/UserTokenService'
 import CallCard from './CallCard'
 import LocalVideoPreviewCard from './LocalVideoPreviewCard'
 import Login from './Login'
@@ -65,60 +66,61 @@ const VideoCall: React.FC = props => {
     }
 
     const provisionNewUser = async () => {
-        const userId = user?.id ?? ""
-        const userToken = user?.token ?? ''
-        if (userId) {
 
-            try {
-                const tokenCredential = new AzureCommunicationUserCredential(userToken)
-                const options = {}
-                const callClient = new CallClient(options)
-                const callAgentT = callAgent ?? await callClient.createCallAgent(tokenCredential)
-                setCallAgent(callAgentT)
-                const deviceManager = await callClient.getDeviceManager()
-                setDevieManager(deviceManager)
-                await deviceManager.askDevicePermission(true, true)
-                callAgentT.updateDisplayName(userId)
-                await deviceManager.askDevicePermission(true, true)
-                getCallOptions(deviceManager)
+        var resp = await getUser()
+        debugger
+        setUser({
+            id: resp.user.communicationUserId,
+            token: resp.token,
+        })
+        try {
+            const tokenCredential = new AzureCommunicationUserCredential(resp.token)
+            const options = {}
+            const callClient = new CallClient(options)
+            const callAgentT = callAgent ?? await callClient.createCallAgent(tokenCredential)
+            setCallAgent(callAgentT)
+            const deviceManager = await callClient.getDeviceManager()
+            setDevieManager(deviceManager)
+            await deviceManager.askDevicePermission(true, true)
+            callAgentT.updateDisplayName(resp.user.communicationUserId)
+            await deviceManager.askDevicePermission(true, true)
+            getCallOptions(deviceManager)
 
-                callAgentT.on('callsUpdated', e => {
-                    console.log(`callsUpdated, added=${e.added}, removed=${e.removed}`)
+            callAgentT.on('callsUpdated', e => {
+                console.log(`callsUpdated, added=${e.added}, removed=${e.removed}`)
 
-                    e.added.forEach(calla => {
-                        if (call && calla.isIncoming) {
-                            calla.reject()
-                            return
-                        }
+                e.added.forEach(calla => {
+                    if (call && calla.isIncoming) {
+                        calla.reject()
+                        return
+                    }
 
-                        setCall(calla)
-                    })
-
-                    e.removed.forEach(callr => {
-                        if (call && call === callr) {
-                            //dispatch({type: GlobalStateAction.SetCall, call})
-                            debugger
-                        }
-                    })
+                    setCall(calla)
                 })
 
-                setReady(true)
-            } catch (e) {
-                console.error(e)
-                setError(e.message)
-            }
+                e.removed.forEach(callr => {
+                    if (call && call === callr) {
+                        //dispatch({type: GlobalStateAction.SetCall, call})
+                        debugger
+                    }
+                })
+            })
+
+            setReady(true)
+        } catch (e) {
+            console.error(e)
+            setError(e.message)
         }
+
     }
 
     return (
         <div>
 
-            {!ready && <Login busy={busy} callReady={ready} onUserSelection={setUser} handleLogin={provisionNewUser} />}
+            {!ready && <Login busy={busy} callReady={ready} handleLogin={provisionNewUser} />}
             {
-                <div>
-                    <div>Ready: <p>{ready}</p></div>
-                    <div>User: <p>{user?.id}</p></div>
-                </div>
+
+                <div>User: {user?.id}</div>
             }
             {
                 ready && (<>
@@ -141,14 +143,6 @@ const VideoCall: React.FC = props => {
                     }
 
                     <div>
-                        Call Card: {
-                            <>
-                                <p>callId: {call?.id ?? ""}  </p>
-                                <p>cameraId: {cameraId} </p>
-                                <p>speakerId : {speakerId}</p>
-                                <p>micId : {micId}</p>
-                            </>
-                        }
                         {call && cameraId && speakerId && micId && <CallCard
                             call={call}
                             cameraId={cameraId}
@@ -157,7 +151,7 @@ const VideoCall: React.FC = props => {
                             speakerId={speakerId} />}
                     </div></>)
             }
-
+            {error && <h4>{error}</h4>}
         </div>
     )
 }

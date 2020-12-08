@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react'
 import {DeviceManager, LocalVideoStream, Renderer} from '@azure/communication-calling'
+import React, {useEffect} from 'react'
 
 const LocalVideoPreviewCard: React.FC<{deviceManager: DeviceManager | undefined, selectedCameraDeviceId: string}> = props => {
     useEffect(() => {
@@ -21,11 +21,9 @@ const LocalVideoPreviewCard: React.FC<{deviceManager: DeviceManager | undefined,
     }, [])
 
     return (
-        <div>
-            <div style={{backgroundColor: "lightgreen", marginBottom: "0.5em", padding: "0.5em"}}>
-                test
-                    <div id="localVideoRenderer"></div>
-            </div>
+        <div style={{height: "30vw", width: '20vw', marginBottom: "0.5em", padding: "0.5em"}}>
+            test
+            <div id="localVideoRenderer"></div>
         </div>
     )
 }
