@@ -66,7 +66,7 @@ const CallCard: React.FC<ICallCardProps> = props => {
                 }
             }
             if (call.state === 'Incoming') {
-
+                debugger
             }
         }
         onCallStateChanged()
@@ -77,6 +77,7 @@ const CallCard: React.FC<ICallCardProps> = props => {
 
         call.remoteParticipants.forEach(rp => subscribeToRemoteParticipant(rp))
         call.on('remoteParticipantsUpdated', e => {
+            debugger
             console.log(`Call=${call.id}, remoteParticipantsUpdated, added=${e.added}, removed=${e.removed}`)
             e.added.forEach(p => {
                 console.log('participantAdded', p)
@@ -86,7 +87,6 @@ const CallCard: React.FC<ICallCardProps> = props => {
             e.removed.forEach(p => {
                 console.log('participantRemoved')
                 setremoteParticipants([...call.remoteParticipants])
-
             })
         })
 
@@ -95,24 +95,25 @@ const CallCard: React.FC<ICallCardProps> = props => {
     const subscribeToRemoteParticipant = (participant: RemoteParticipant) => {
         debugger
         participant.on('participantStateChanged', () => {
+            debugger
             console.log('participantStateChanged', participant.identifier, participant.state)
             setremoteParticipants([...call.remoteParticipants])
         })
-
-        const handleParticipantStream = (e: any) => {
-            e.added.forEach((stream: any) => {
-                console.log('video stream added', participant.identifier, stream, stream.type)
-                setRemoteStreams([...remoteStreams, stream])
-            })
-            e.removed.forEach((stream: any) => {
-                console.log('video stream removed', stream, stream.type)
-            })
-        }
 
         let participantStreams = participant.videoStreams
         participantStreams = participantStreams.filter(streamTuple => {return !remoteStreams.some(tuple => {return tuple === streamTuple && tuple.id === streamTuple.id})})
         setRemoteStreams([...participantStreams, ...remoteStreams])
         participant.on('videoStreamsUpdated', handleParticipantStream)
+    }
+
+    const handleParticipantStream = (e: any) => {
+        debugger
+        e.added.forEach((stream: any) => {
+            setRemoteStreams([...remoteStreams, stream])
+        })
+        e.removed.forEach((stream: any) => {
+            console.log('video stream removed', stream, stream.type)
+        })
     }
 
     const handleAcceptCall = async () => {
@@ -151,6 +152,7 @@ const CallCard: React.FC<ICallCardProps> = props => {
     const watchForCallFinishConnecting = async () => {
         return new Promise((resolve) => {
             if (call.state !== 'None' && call.state !== 'Connecting' && call.state !== 'Incoming') {
+                debugger
                 resolve(0)
             } else {
                 callFinishConnectingResolve = resolve
@@ -254,8 +256,8 @@ const CallCard: React.FC<ICallCardProps> = props => {
     return (
         <div>
             <h4>State: {callState}</h4>
-            <h4>Remote participants: {remoteParticipants.map(x => x.isMuted)}</h4>
-
+            {remoteParticipants && <h4>Remote participants: {remoteParticipants.length} {remoteParticipants.map(x => x.displayName)}</h4>}
+            Remote Streams: {remoteStreams && remoteStreams.length}
             <div>
                 {
                     callState === 'Connected' && (<div className={classes.videoContainer}>

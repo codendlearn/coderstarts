@@ -1,35 +1,35 @@
 import {Call, CallAgent, CallClient, DeviceManager, LocalVideoStream, StartCallOptions} from '@azure/communication-calling'
 import {AzureCommunicationUserCredential} from '@azure/communication-common'
-import {Button, TextField} from '@material-ui/core'
-import React, {ChangeEvent, useState} from 'react'
+import {LinearProgress} from '@material-ui/core'
+import React, {useEffect, useState} from 'react'
 import {ICallUser} from '../../model/IUser'
 import {getUser} from '../../services/UserTokenService'
 import CallCard from './CallCard'
 import LocalVideoPreviewCard from './LocalVideoPreviewCard'
-import Login from './Login'
 
-const VideoCall: React.FC = props => {
+const VideoCall: React.FC<{groupId: string}> = props => {
     const [call, setCall] = useState<Call>()
     const [callAgent, setCallAgent] = useState<CallAgent>()
     const [cameraId, setCameraId] = useState<string>()
     const [speakerId, setSpeakerId] = useState<string>()
     const [micId, setMicId] = useState<string>()
-    const [remoteUserId, setRemoteUserId] = useState<string>("")
     const [deviceManager, setDevieManager] = useState<DeviceManager>()
     const [user, setUser] = useState<ICallUser>()
     const [busy, setBusy] = useState<boolean>(false)
     const [ready, setReady] = useState<boolean>(false)
     const [error, setError] = useState<string>()
 
-    const placeCall = () => {
+    useEffect(() => {
+        setBusy(true)
+        provisionNewUser()
+    }, [])
+
+    const placeCall = (callAgent: CallAgent) => {
         try {
             let callOptions = getCallOptions()
-            //let call = callAgent?.call([{communicationUserId: remoteUserId}], callOptions)
             let call = callAgent?.join({
-                groupId: "5e9c7cbb-daa3-42a8-b092-162c0c8492c7"
+                groupId: props.groupId
             }, callOptions)
-            //setCall(call)
-
         } catch (e) {
             console.log('Failed to place a call', e)
         }
@@ -64,14 +64,10 @@ const VideoCall: React.FC = props => {
         return callOptions
     }
 
-    const changeRemoteUserId = (e: ChangeEvent<HTMLInputElement>) => {
-        setRemoteUserId(e.target.value)
-    }
-
     const provisionNewUser = async () => {
 
         var resp = await getUser()
-        debugger
+
         setUser({
             id: resp.user.communicationUserId,
             token: resp.token,
@@ -103,13 +99,15 @@ const VideoCall: React.FC = props => {
 
                 e.removed.forEach(callr => {
                     if (call && call === callr) {
-                        //dispatch({type: GlobalStateAction.SetCall, call})
-                        debugger
+                        setCall(undefined)
                     }
                 })
             })
 
             setReady(true)
+
+            placeCall(callAgentT)
+            setBusy(false)
         } catch (e) {
             console.error(e)
             setError(e.message)
@@ -119,41 +117,24 @@ const VideoCall: React.FC = props => {
 
     return (
         <div>
-
-            {!ready && <Login busy={busy} callReady={ready} handleLogin={provisionNewUser} />}
-            {
-
-                <div>User: {user?.id}</div>
-            }
+            {busy && <LinearProgress />}
+            {!ready && <div>User: {user?.id}</div>}
             {
                 ready && (<>
-                    <div>
-                        <TextField value={remoteUserId}
-                            className="input"
-                            onChange={changeRemoteUserId}
-                            label="Remote User Id" />
-                    </div>
-
-                    <Button variant="contained"
-                        color="primary"
-                        onClick={placeCall}>
-                        Place Call
-                    </Button>
-
                     {
                         cameraId &&
                         <LocalVideoPreviewCard deviceManager={deviceManager} selectedCameraDeviceId={cameraId} />
                     }
 
-                    <div>
-                        {call && cameraId && speakerId && micId && <CallCard
-                            call={call}
-                            cameraId={cameraId}
-                            micId={micId}
-                            deviceManager={deviceManager}
-                            speakerId={speakerId} />}
-                    </div></>)
+                    {call && cameraId && speakerId && micId && <CallCard
+                        call={call}
+                        cameraId={cameraId}
+                        micId={micId}
+                        deviceManager={deviceManager}
+                        speakerId={speakerId} />}
+                </>)
             }
+
             {error && <h4>{error}</h4>}
         </div>
     )

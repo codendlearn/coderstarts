@@ -1,11 +1,14 @@
 import React from 'react'
+import {useParams} from 'react-router-dom'
 import Participants from './Participants'
 import VideoCall from './VideoCall'
 
-const VideoConsultation = () => {
+const VideoConsultation: React.FC = (props) => {
+    const {groupId} = useParams<{groupId: string}>()
+
     return (
         <div>
-            <VideoCall />
+            <VideoCall groupId={groupId ?? ""} />
             <Participants />
         </div>
     )
