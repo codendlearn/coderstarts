@@ -1,5 +1,5 @@
 import {AcceptCallOptions, Call, CallState, DeviceManager, LocalVideoStream, RemoteParticipant, RemoteVideoStream, VideoDeviceInfo} from '@azure/communication-calling'
-import {Button, LinearProgress} from '@material-ui/core'
+import {Button, createStyles, LinearProgress, makeStyles, Theme} from '@material-ui/core'
 import MicIcon from '@material-ui/icons/Mic'
 import MicOffIcon from '@material-ui/icons/MicOff'
 import PauseIcon from '@material-ui/icons/Pause'
@@ -19,7 +19,27 @@ interface ICallCardProps {
     deviceManager?: DeviceManager
 }
 
+const styles = makeStyles((theme: Theme) => createStyles({
+    videoContainer: {
+        display: "flex",
+        maxWidth: "70vw",
+        flexDirection: "row",
+        flexWrap: "wrap",
+    },
+    iconWrapper: {
+        borderRadius: theme.shape.borderRadius,
+        textAlign: "center",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        marginBottom: theme.spacing(3),
+        padding: theme.spacing(1) * 1.5
+    }
+}))
+
 const CallCard: React.FC<ICallCardProps> = props => {
+
+    const classes = styles()
     const [remoteParticipants, setremoteParticipants] = useState<RemoteParticipant[]>([])
     const [remoteStreams, setRemoteStreams] = useState<RemoteVideoStream[]>([])
     const {call, cameraId, micId, speakerId, deviceManager} = props
@@ -238,9 +258,10 @@ const CallCard: React.FC<ICallCardProps> = props => {
 
             <div>
                 {
-                    callState === 'Connected' && (<div>
+                    callState === 'Connected' && (<div className={classes.videoContainer}>
                         {
-                            remoteStreams.filter(f => f.type == "Video").map((v, index) => <StreamMedia key={index} stream={v} id={v.id} />)
+                            // remoteStreams.filter(f => f.type == "Video")
+                            remoteStreams.map((v, index) => <StreamMedia key={index} stream={v} id={v.id} />)
                         }
 
                         <div>

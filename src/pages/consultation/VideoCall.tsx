@@ -24,7 +24,10 @@ const VideoCall: React.FC = props => {
     const placeCall = () => {
         try {
             let callOptions = getCallOptions()
-            let call = callAgent?.call([{communicationUserId: remoteUserId}], callOptions)
+            //let call = callAgent?.call([{communicationUserId: remoteUserId}], callOptions)
+            let call = callAgent?.join({
+                groupId: "5e9c7cbb-daa3-42a8-b092-162c0c8492c7"
+            }, callOptions)
             //setCall(call)
 
         } catch (e) {

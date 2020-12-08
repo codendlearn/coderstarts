@@ -47,7 +47,7 @@ const StreamMedia: React.FC<{stream: RemoteVideoStream, id: number}> = (props) =
     }
 
     return (
-        <div style={{height: "30vw", width: '20vw', marginBottom: "0.5em", padding: "0.5em"}}>
+        <div style={{marginBottom: "0.5em", padding: "0.5em"}}>
             {available && <div id={`${id}-${stream.type}-${stream.id}`}></div>}
         </div>
     )
