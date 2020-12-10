@@ -2,7 +2,7 @@ import { CommunicationIdentityClient } from '@azure/communication-administration
 
 export const getUser = async () => {
   const connectionString =
-    'endpoint=https://collab.communication.azure.com/;accesskey=t1+/KGvOym8MN7UlznHpvBN518M+EYEDDHWEczHSqBPTlpvIaiaJnxI1sA/gSMXpctw+kDC3oHdi6amy3eM4VQ=='
+    'endpoint=https://collab.communication.azure.com/;accesskey=JAUFob2sJjfYfn+S7UIuCyFz0v6IWJJJ51nUIkJg0TO4IiSECgKjIb2KyQeM6sR24SSA05c4OnVW7G8Z1hSSHg=='
   const identityClient = new CommunicationIdentityClient(connectionString)
   let identityResponse = await identityClient.createUser()
   console.log(

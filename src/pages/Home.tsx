@@ -9,8 +9,8 @@ import CookieRulesDialog from '../components/CookieRulesDialog'
 import Footer from '../components/Footer'
 import Header from '../components/Header'
 import Blog from './Blog'
-import VideoConsultation from "./consultation/VideoConsultation"
 import FeatureSection from './home/FeaturesSection'
+import GroupCall from "./home/GroupCall"
 import HeadSection from './home/HeadSection'
 import PricingSection from "./home/PricingSection"
 
@@ -74,7 +74,7 @@ const Home = () => {
                     </Route>
                     <Route path="/consultation/:groupId">
                         {/* <ConsultationStateProvider> */}
-                        <VideoConsultation />
+                        <GroupCall />
                         {/* </ConsultationStateProvider> */}
                     </Route>
                     <Route exact path="/asdf">
