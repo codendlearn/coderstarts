@@ -3,9 +3,9 @@ import {Call, CallAgent, CallClient, CallClientOptions, CallState, DeviceManager
 import {AzureCommunicationUserCredential} from '@azure/communication-common'
 import React, {useEffect, useState} from 'react'
 import {getId} from '../../utils/stringUtils'
+import LocalVideoPreviewCard from './LocalVideoPreviewCard'
 
 var rendererView: RendererView
-
 
 const GroupCall = () => {
     const groupId = "75b9ed1b-0240-4f01-8450-38457a413c3d"
@@ -22,27 +22,9 @@ const GroupCall = () => {
     const connectionString =
         "endpoint=https://collab.communication.azure.com/;accesskey=JAUFob2sJjfYfn+S7UIuCyFz0v6IWJJJ51nUIkJg0TO4IiSECgKjIb2KyQeM6sR24SSA05c4OnVW7G8Z1hSSHg=="
 
-
     useEffect(() => {
-        (async () => {
-            if (localVideoStream) {
-                var renderer: Renderer = new Renderer(localVideoStream)
-                rendererView = await renderer.createView({scalingMode: 'Crop'})
-
-                var container = document.getElementById("CONFIGURATION_LOCAL_VIDEO_PREVIEW_ID")
-
-                if (container && container.childElementCount === 0) {
-                    container.appendChild(rendererView.target)
-                }
-            }
-        })()
-
-        return () => {
-            if (rendererView) {
-                rendererView.dispose()
-            }
-        }
-    }, [localVideoStream])
+        initiate()
+    }, [])
 
     const initiate = async () => {
         const identityClient = new CommunicationIdentityClient(connectionString)
@@ -175,18 +157,16 @@ const GroupCall = () => {
 
     return (
         <div>
-            <button disabled={ready} value="initialte" onClick={initiate} >Initiate</button>
 
             {ready && <div>
                 <h4>{call?.state}</h4>
-
-                <div id="CONFIGURATION_LOCAL_VIDEO_PREVIEW_ID" style={{border: "2px solid black", height: "300px"}} />
+                {deviceManager && <LocalVideoPreviewCard deviceManager={deviceManager} />}
 
                 <button onClick={joinCall} >Join Call</button>
 
                 <>
                     <h4>Participants: {participants?.length}</h4>
-                    <h4>Streams: {call?.remoteParticipants && call?.remoteParticipants[0]?.videoStreams && call?.remoteParticipants[0]?.videoStreams[0].type}</h4>
+                    <h4>Streams: {call?.remoteParticipants && call?.remoteParticipants[0]?.videoStreams && call?.remoteParticipants[0]?.videoStreams[0]?.type}</h4>
                     <h4>CallState: {callState?.toString()}</h4>
                     <h4>call: {call?.remoteParticipants.length}</h4>
 

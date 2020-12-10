@@ -10,7 +10,7 @@ import Footer from '../components/Footer'
 import Header from '../components/Header'
 import Blog from './Blog'
 import FeatureSection from './home/FeaturesSection'
-import GroupCall from "./home/GroupCall"
+import GroupCall from "./consultation/GroupCall"
 import HeadSection from './home/HeadSection'
 import PricingSection from "./home/PricingSection"
 
@@ -72,9 +72,10 @@ const Home = () => {
                     <Route exact path="/blog">
                         <Blog />
                     </Route>
-                    <Route path="/consultation/:groupId">
+                    <Route path="/consultation/:groupId?">
                         {/* <ConsultationStateProvider> */}
                         <GroupCall />
+                        {/* <VideoConsultation /> */}
                         {/* </ConsultationStateProvider> */}
                     </Route>
                     <Route exact path="/asdf">

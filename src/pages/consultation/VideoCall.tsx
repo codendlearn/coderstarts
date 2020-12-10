@@ -123,7 +123,7 @@ const VideoCall: React.FC<{groupId: string}> = props => {
                 ready && (<>
                     {
                         cameraId &&
-                        <LocalVideoPreviewCard deviceManager={deviceManager} selectedCameraDeviceId={cameraId} />
+                        deviceManager && <LocalVideoPreviewCard deviceManager={deviceManager} />
                     }
 
                     {call && cameraId && speakerId && micId && <CallCard
