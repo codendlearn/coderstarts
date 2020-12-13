@@ -151,22 +151,10 @@ const GroupCall = () => {
                 <h4>{call?.state}</h4>
                 {deviceManager && <LocalVideoPreviewCard onJoinCall={joinCall} deviceManager={deviceManager} />}
 
-                <>
-                    <h4>Participants: {participants?.length}</h4>
-                    <h4>Streams: {call?.remoteParticipants && call?.remoteParticipants[0]?.videoStreams && call?.remoteParticipants[0]?.videoStreams[0]?.type}</h4>
-                    <h4>Streams: {participants && participants.map(x => x.videoStreams.length + " - ")}</h4>
-                    <h4>CallState: {callState?.toString()}</h4>
-                    <h4>call: {call?.remoteParticipants.length}</h4>
-
-                </>
-
                 <Box display="flex" flexWrap="wrap">
-                    <div>aaa {participants?.length ?? "---"}</div>
-
                     {participants
                         && participants.length > 0
                         && participants.map(participant => <VideoStream remoteStream={participant.videoStreams.filter(a => a.type === "Video")[0]} />)}
-
                 </Box>
             </div>
             }
