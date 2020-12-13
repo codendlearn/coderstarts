@@ -123,7 +123,7 @@ const VideoCall: React.FC<{groupId: string}> = props => {
                 ready && (<>
                     {
                         cameraId &&
-                        deviceManager && <LocalVideoPreviewCard deviceManager={deviceManager} />
+                        deviceManager && <LocalVideoPreviewCard onJoinCall={() => { }} deviceManager={deviceManager} />
                     }
 
                     {call && cameraId && speakerId && micId && <CallCard

@@ -1,14 +1,17 @@
 import {CommunicationIdentityClient} from '@azure/communication-administration'
-import {Call, CallAgent, CallClient, CallClientOptions, CallState, DeviceManager, GroupCallContext, JoinCallOptions, LocalVideoStream, RemoteParticipant, Renderer, RendererView} from '@azure/communication-calling'
+import {Call, CallAgent, CallClient, CallClientOptions, CallState, DeviceManager, GroupCallContext, JoinCallOptions, LocalVideoStream, RemoteParticipant, RendererView} from '@azure/communication-calling'
 import {AzureCommunicationUserCredential} from '@azure/communication-common'
+import {Box} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import {getId} from '../../utils/stringUtils'
 import LocalVideoPreviewCard from './LocalVideoPreviewCard'
+import VideoStream from './VideoStream'
 
 var rendererView: RendererView
 
 const GroupCall = () => {
     const groupId = "75b9ed1b-0240-4f01-8450-38457a413c3d"
+
     const [deviceManager, setDeviceManager] = useState<DeviceManager>()
     const [userid, setuserid] = useState<string>()
     const [callClient, setcallClient] = useState<CallClient>()
@@ -128,7 +131,9 @@ const GroupCall = () => {
         let context: GroupCallContext = {
             groupId: groupId
         }
+
         callAgent && callAgent.join(context, getCallOptions())
+        console.log("joining group with groupId: ", groupId)
     }
 
     const getCallOptions = (): JoinCallOptions => {
@@ -140,39 +145,29 @@ const GroupCall = () => {
         }
     }
 
-    const displayVideo = async () => {
-        let remoteStream = call?.remoteParticipants[0].videoStreams.filter(r => r.type == "Video")[0]
-
-        if (remoteStream) {
-            var renderer: Renderer = new Renderer(remoteStream)
-            rendererView = await renderer.createView({scalingMode: 'Crop'})
-
-            var container = document.getElementById("CONFIGURATION_REMOTE_VIDEO_PREVIEW_ID")
-
-            if (container && container.childElementCount === 0) {
-                container.appendChild(rendererView.target)
-            }
-        }
-    }
-
     return (
         <div>
-
             {ready && <div>
                 <h4>{call?.state}</h4>
-                {deviceManager && <LocalVideoPreviewCard deviceManager={deviceManager} />}
-
-                <button onClick={joinCall} >Join Call</button>
+                {deviceManager && <LocalVideoPreviewCard onJoinCall={joinCall} deviceManager={deviceManager} />}
 
                 <>
                     <h4>Participants: {participants?.length}</h4>
                     <h4>Streams: {call?.remoteParticipants && call?.remoteParticipants[0]?.videoStreams && call?.remoteParticipants[0]?.videoStreams[0]?.type}</h4>
+                    <h4>Streams: {participants && participants.map(x => x.videoStreams.length + " - ")}</h4>
                     <h4>CallState: {callState?.toString()}</h4>
                     <h4>call: {call?.remoteParticipants.length}</h4>
 
                 </>
-                <button onClick={displayVideo} >Display Video</button>
-                <div id="CONFIGURATION_REMOTE_VIDEO_PREVIEW_ID" style={{border: "5px solid blue", height: "300px"}} />
+
+                <Box display="flex" flexWrap="wrap">
+                    <div>aaa {participants?.length ?? "---"}</div>
+
+                    {participants
+                        && participants.length > 0
+                        && participants.map(participant => <VideoStream remoteStream={participant.videoStreams.filter(a => a.type === "Video")[0]} />)}
+
+                </Box>
             </div>
             }
         </div>
