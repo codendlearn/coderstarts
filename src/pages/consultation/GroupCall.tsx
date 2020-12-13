@@ -1,7 +1,7 @@
 import {CommunicationIdentityClient} from '@azure/communication-administration'
 import {Call, CallAgent, CallClient, CallClientOptions, CallState, DeviceManager, GroupCallContext, JoinCallOptions, LocalVideoStream, RemoteParticipant} from '@azure/communication-calling'
 import {AzureCommunicationUserCredential} from '@azure/communication-common'
-import {Box} from '@material-ui/core'
+import {Box, LinearProgress, Typography} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import {getId} from '../../utils/stringUtils'
 import LocalVideoPreviewCard from './LocalVideoPreviewCard'
@@ -15,6 +15,7 @@ const GroupCall = () => {
     const [callClient, setcallClient] = useState<CallClient>()
     const [callAgent, setcallAgent] = useState<CallAgent>()
     const [call, setcall] = useState<Call>()
+    const [error, setError] = useState<string>()
     const [callState, setcallState] = useState<CallState>()
     const [participants, setparticipants] = useState<RemoteParticipant[]>()
     const [ready, setready] = useState<boolean>(false)
@@ -35,58 +36,63 @@ const GroupCall = () => {
         const options: CallClientOptions = {}
         const userToken = tokenResponse.token
 
-        var callClient = new CallClient(options)
-        const tokenCredential = new AzureCommunicationUserCredential(userToken)
-        let callAgent: CallAgent = await callClient.createCallAgent(tokenCredential)
-        callAgent.updateDisplayName(identityResponse.communicationUserId)
-        let deviceManager: DeviceManager = await callClient.getDeviceManager()
-        setDeviceManager(deviceManager)
-        setuserid(identityResponse.communicationUserId)
-        setcallClient(callClient)
-        setcallAgent(callAgent)
-        await deviceManager.askDevicePermission(true, true)
-        let devices = deviceManager.getCameraList()
-        let localStream = new LocalVideoStream(devices[0])
-        setLocalVideoStream(localStream)
-        callAgent.on('callsUpdated', (e: {added: Call[]; removed: Call[]}): void => {
-            e.added.forEach((addedCall) => {
-                if (call && addedCall.isIncoming) {
-                    addedCall.reject()
-                    return
-                }
+        try {
+            var callClient = new CallClient(options)
+            const tokenCredential = new AzureCommunicationUserCredential(userToken)
+            let callAgent: CallAgent = await callClient.createCallAgent(tokenCredential)
+            callAgent.updateDisplayName(identityResponse.communicationUserId)
+            let deviceManager: DeviceManager = await callClient.getDeviceManager()
+            setDeviceManager(deviceManager)
+            setuserid(identityResponse.communicationUserId)
+            setcallClient(callClient)
+            setcallAgent(callAgent)
+            await deviceManager.askDevicePermission(true, true)
+            let devices = deviceManager.getCameraList()
+            let localStream = new LocalVideoStream(devices[0])
+            setLocalVideoStream(localStream)
+            callAgent.on('callsUpdated', (e: {added: Call[]; removed: Call[]}): void => {
+                e.added.forEach((addedCall) => {
+                    if (call && addedCall.isIncoming) {
+                        addedCall.reject()
+                        return
+                    }
 
-                setcall(addedCall)
+                    setcall(addedCall)
 
-                addedCall.on('callStateChanged', (): void => {
-                    setcallState(addedCall.state)
-                })
-
-                addedCall.on('remoteParticipantsUpdated', (ev): void => {
-                    ev.added.forEach((addedRemoteParticipant) => {
-                        console.log('participantAdded', addedRemoteParticipant)
-                        subscribeToParticipant(addedRemoteParticipant, addedCall)
-                        setparticipants([...addedCall.remoteParticipants])
+                    addedCall.on('callStateChanged', (): void => {
+                        setcallState(addedCall.state)
                     })
 
-                    // we don't use the actual value we are just going to reset the remoteParticipants based on the call
-                    if (ev.removed.length > 0) {
-                        console.log('participantRemoved')
-                        setparticipants([...addedCall.remoteParticipants])
+                    addedCall.on('remoteParticipantsUpdated', (ev): void => {
+                        ev.added.forEach((addedRemoteParticipant) => {
+                            console.log('participantAdded', addedRemoteParticipant)
+                            subscribeToParticipant(addedRemoteParticipant, addedCall)
+                            setparticipants([...addedCall.remoteParticipants])
+                        })
+
+                        // we don't use the actual value we are just going to reset the remoteParticipants based on the call
+                        if (ev.removed.length > 0) {
+                            console.log('participantRemoved')
+                            setparticipants([...addedCall.remoteParticipants])
+                        }
+                    })
+
+                    const rp = [...addedCall.remoteParticipants]
+                    rp.forEach((v) => subscribeToParticipant(v, addedCall))
+                    setparticipants(rp)
+                    setcallState(addedCall.state)
+                })
+                e.removed.forEach((removedCall) => {
+                    console.log('callRemoved', removedCall)
+                    if (call === removedCall) {
+
                     }
                 })
-
-                const rp = [...addedCall.remoteParticipants]
-                rp.forEach((v) => subscribeToParticipant(v, addedCall))
-                setparticipants(rp)
-                setcallState(addedCall.state)
             })
-            e.removed.forEach((removedCall) => {
-                console.log('callRemoved', removedCall)
-                if (call === removedCall) {
-
-                }
-            })
-        })
+        } catch (error) {
+            setError(error.message)
+            console.log(error.message)
+        }
 
         setready(true)
     }
@@ -144,19 +150,27 @@ const GroupCall = () => {
     }
 
     return (
-        <div>
-            {ready && <div>
-                <h4>{call?.state}</h4>
+        <>{
+            !ready ? <LinearProgress /> :
+                (error ?
+                    <Typography variant="h4">{error}</Typography>
+                    :
+                    <div>
+                        {ready && <div>
+                            <h4>{call?.state}</h4>
 
-                <Box display="flex" flexWrap="wrap">
-                    {deviceManager && <LocalVideoPreviewCard onJoinCall={joinCall} deviceManager={deviceManager} />}
-                    {participants
-                        && participants.length > 0
-                        && participants.map(participant => <VideoStream remoteStream={participant.videoStreams.filter(a => a.type === "Video")[0]} />)}
-                </Box>
-            </div>
-            }
-        </div>
+                            <Box display="flex" flexWrap="wrap">
+                                {deviceManager && <LocalVideoPreviewCard onJoinCall={joinCall} deviceManager={deviceManager} />}
+                                {participants
+                                    && participants.length > 0
+                                    && participants.map(participant => <VideoStream remoteStream={participant.videoStreams.filter(a => a.type === "Video")[0]} />)}
+                            </Box>
+                        </div>
+                        }
+                    </div>)
+        }
+
+        </>
     )
 }
 

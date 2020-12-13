@@ -1,4 +1,4 @@
-import {createMuiTheme, CssBaseline, MuiThemeProvider, useMediaQuery} from '@material-ui/core'
+import {createMuiTheme, MuiThemeProvider, useMediaQuery} from '@material-ui/core'
 import React from 'react'
 import GlobalStyles from '../GlobalStyles'
 import theme from '../theme'
@@ -20,7 +20,6 @@ const SetTheme = (props: any) => {
 
     return (
         <MuiThemeProvider theme={appTheme}>
-            <CssBaseline />
             <GlobalStyles />
             {props.children}
         </MuiThemeProvider>)

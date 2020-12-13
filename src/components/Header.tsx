@@ -37,7 +37,7 @@ const Header = () => {
     }
 
     return (
-        <div className={classes.appBar}>
+        <>
             <AppBar position="fixed" className={classes.appBar}>
                 <Toolbar className={classes.toolbar}>
                     <div>
@@ -109,7 +109,7 @@ const Header = () => {
                 open={mobileDrawerOpen}
                 onClose={closeMobileDrawer}
             />
-        </div>
+        </>
     )
 }
 

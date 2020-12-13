@@ -11,6 +11,7 @@ ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <SetTheme>
+        <CssBaseline />
         <App />
       </SetTheme>
     </BrowserRouter>
