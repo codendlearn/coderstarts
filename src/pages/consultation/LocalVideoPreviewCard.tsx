@@ -11,6 +11,7 @@ import theme from '../../theme'
 var rendererView: RendererView
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
+        order: 1,
         // display: 'flex',
         maxWidth: '50vw',
         minWidth: '40vw',

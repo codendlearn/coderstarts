@@ -1,13 +1,11 @@
 import {CommunicationIdentityClient} from '@azure/communication-administration'
-import {Call, CallAgent, CallClient, CallClientOptions, CallState, DeviceManager, GroupCallContext, JoinCallOptions, LocalVideoStream, RemoteParticipant, RendererView} from '@azure/communication-calling'
+import {Call, CallAgent, CallClient, CallClientOptions, CallState, DeviceManager, GroupCallContext, JoinCallOptions, LocalVideoStream, RemoteParticipant} from '@azure/communication-calling'
 import {AzureCommunicationUserCredential} from '@azure/communication-common'
 import {Box} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import {getId} from '../../utils/stringUtils'
 import LocalVideoPreviewCard from './LocalVideoPreviewCard'
 import VideoStream from './VideoStream'
-
-var rendererView: RendererView
 
 const GroupCall = () => {
     const groupId = "75b9ed1b-0240-4f01-8450-38457a413c3d"
@@ -149,9 +147,9 @@ const GroupCall = () => {
         <div>
             {ready && <div>
                 <h4>{call?.state}</h4>
-                {deviceManager && <LocalVideoPreviewCard onJoinCall={joinCall} deviceManager={deviceManager} />}
 
                 <Box display="flex" flexWrap="wrap">
+                    {deviceManager && <LocalVideoPreviewCard onJoinCall={joinCall} deviceManager={deviceManager} />}
                     {participants
                         && participants.length > 0
                         && participants.map(participant => <VideoStream remoteStream={participant.videoStreams.filter(a => a.type === "Video")[0]} />)}
