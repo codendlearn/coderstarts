@@ -3,7 +3,7 @@ import HomeIcon from "@material-ui/icons/Home"
 import HowToRegIcon from "@material-ui/icons/HowToReg"
 import React from 'react'
 import {IMenuItem} from "../model/IMenuItem"
-import VideoConsultation from "../pages/consultation/VideoConsultation"
+import GroupCall from "../pages/consultation/GroupCall"
 import Home from '../pages/Home'
 
 export const menuItems: IMenuItem[] = [
@@ -28,7 +28,7 @@ export const menuItems: IMenuItem[] = [
   {
     title: 'Consultation',
     path: '/consultation',
-    component: VideoConsultation,
+    component: GroupCall,
     icon: <HowToRegIcon className='text-white' />,
   },
 ]

@@ -1,15 +1,29 @@
 import {CommunicationIdentityClient} from '@azure/communication-administration'
-import {Call, CallAgent, CallClient, CallClientOptions, CallState, DeviceManager, GroupCallContext, JoinCallOptions, LocalVideoStream, RemoteParticipant} from '@azure/communication-calling'
+import {Call, CallAgent, CallClient, CallClientOptions, CallState, DeviceManager, JoinCallOptions, LocalVideoStream, RemoteParticipant} from '@azure/communication-calling'
 import {AzureCommunicationUserCredential} from '@azure/communication-common'
-import {Box, LinearProgress, Typography} from '@material-ui/core'
+import {Grid, GridSize, LinearProgress, makeStyles, Theme, Typography} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import {getId} from '../../utils/stringUtils'
 import LocalVideoPreviewCard from './LocalVideoPreviewCard'
 import VideoStream from './VideoStream'
 
-const GroupCall = () => {
-    const groupId = "75b9ed1b-0240-4f01-8450-38457a413c3d"
+const useStyles = makeStyles((theme: Theme) => ({
+    root: {
+        flexGrow: 1,
+    },
+    paper: {
+        height: 140,
+        width: 100,
+    },
+    control: {
+        padding: theme.spacing(2),
+    },
+}))
 
+const GroupCall = () => {
+    const classes = useStyles()
+
+    const groupId = "75b9ed1b-0240-4f01-8450-38457a413c3d"
     const [deviceManager, setDeviceManager] = useState<DeviceManager>()
     const [userid, setuserid] = useState<string>()
     const [callClient, setcallClient] = useState<CallClient>()
@@ -39,8 +53,10 @@ const GroupCall = () => {
         try {
             var callClient = new CallClient(options)
             const tokenCredential = new AzureCommunicationUserCredential(userToken)
-            let callAgent: CallAgent = await callClient.createCallAgent(tokenCredential)
-            callAgent.updateDisplayName(identityResponse.communicationUserId)
+            let callAgent: CallAgent = await callClient.createCallAgent(tokenCredential, {
+                displayName: identityResponse.communicationUserId
+            })
+
             let deviceManager: DeviceManager = await callClient.getDeviceManager()
             setDeviceManager(deviceManager)
             setuserid(identityResponse.communicationUserId)
@@ -132,7 +148,7 @@ const GroupCall = () => {
     }
 
     const joinCall = () => {
-        let context: GroupCallContext = {
+        let context = {
             groupId: groupId
         }
 
@@ -158,13 +174,17 @@ const GroupCall = () => {
                     <div>
                         {ready && <div>
                             <h4>{call?.state}</h4>
+                            {deviceManager && <LocalVideoPreviewCard onJoinCall={joinCall} deviceManager={deviceManager} />}
 
-                            <Box display="flex" flexWrap="wrap">
-                                {deviceManager && <LocalVideoPreviewCard onJoinCall={joinCall} deviceManager={deviceManager} />}
+                            <Grid container className={classes.root} spacing={2}>
                                 {participants
                                     && participants.length > 0
-                                    && participants.map(participant => <VideoStream remoteStream={participant.videoStreams.filter(a => a.type === "Video")[0]} />)}
-                            </Box>
+                                    && participants.map(participant =>
+                                        <Grid item xs={12} md={(participants.length > 4 ? participants.length / 4 : 6) as GridSize}>
+                                            <VideoStream remoteStream={participant.videoStreams.filter(a => a.type === "Video")[0]} />
+                                        </Grid>)
+                                }
+                            </Grid>
                         </div>
                         }
                     </div>)

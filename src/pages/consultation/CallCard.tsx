@@ -1,5 +1,5 @@
 import {AcceptCallOptions, Call, CallState, DeviceManager, LocalVideoStream, RemoteParticipant, RemoteVideoStream, VideoDeviceInfo} from '@azure/communication-calling'
-import {Button, createStyles, LinearProgress, makeStyles, Theme} from '@material-ui/core'
+import {Box, Button, createStyles, LinearProgress, makeStyles, Theme} from '@material-ui/core'
 import MicIcon from '@material-ui/icons/Mic'
 import MicOffIcon from '@material-ui/icons/MicOff'
 import PauseIcon from '@material-ui/icons/Pause'
@@ -261,7 +261,7 @@ const CallCard: React.FC<ICallCardProps> = props => {
             {state.remoteParticipants && <h4>Remote participants: {state.remoteParticipants.length} {state.remoteParticipants.map(x => x.displayName)}</h4>}
             Remote Streams: {state.remoteStreams && state.remoteStreams.length}
             {state.remoteStreams && state.remoteStreams.map(x => <div>{x.id}: {x.type.toString()} : {x.isAvailable}</div>)}
-            <div>
+            <Box display="flex">
                 {
                     callState === 'Connected' && (<div >
                         {
@@ -325,7 +325,7 @@ const CallCard: React.FC<ICallCardProps> = props => {
                         </div>
                     </div>)
                 }
-            </div>
+            </Box>
 
             <div>
                 {
