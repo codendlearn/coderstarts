@@ -52,7 +52,6 @@ const VideoStream: React.FC<VideoStreamProps> = props => {
     useEffect(() => {
         (async () => {
             if (state.video && props.remoteStream && props.remoteStream.isAvailable) {
-
                 const renderer = new Renderer(props.remoteStream)
                 remoteRendererView = await renderer.createView({scalingMode: 'Fit'})
                 const targetContainer = document.getElementById(props.remoteStream.id.toString())
@@ -67,9 +66,28 @@ const VideoStream: React.FC<VideoStreamProps> = props => {
         }
     }, [props.remoteStream])
 
+    useEffect(() => {
+        (async () => {
+            if (props.localStream) {
+                const renderer = new Renderer(props.localStream)
+                localRendererView = await renderer.createView({scalingMode: 'Fit'})
+                const targetContainer = document.getElementById("localStream")
+                targetContainer && targetContainer.appendChild(localRendererView.target)
+            }
+        })()
+
+        return () => {
+            if (localRendererView) {
+                localRendererView.dispose()
+            }
+        }
+
+    }, [])
+
     return (
         <>
-            { (props?.remoteStream?.id) && <div id={props.remoteStream.id.toString()} />}
+            { (props.remoteStream?.id) && <div id={props.remoteStream.id.toString()} />}
+            { (props.localStream) && <div id="localStream" />}
         </>
     )
 }

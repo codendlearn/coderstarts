@@ -1,4 +1,4 @@
-import {createStyles, makeStyles, Theme} from "@material-ui/core"
+import {Box, createStyles, makeStyles, Theme} from "@material-ui/core"
 import AOS from "aos"
 import "aos/dist/aos.css"
 import classNames from "classnames"
@@ -33,7 +33,7 @@ const Home = () => {
     }, [])
 
     return (
-        <div>
+        <Box display="flex" flexDirection="column">
             {!isCookieRulesDialogOpen && (
                 <CookieConsent
                     handleCookieRulesDialogOpen={() => setisCookieRulesDialogOpen(true)}
@@ -84,7 +84,7 @@ const Home = () => {
                 </Switch>
             </div>
             <Footer />
-        </div>
+        </Box>
     )
 }
 
